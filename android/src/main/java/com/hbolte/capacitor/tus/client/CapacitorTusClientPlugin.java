@@ -36,7 +36,7 @@ public class CapacitorTusClientPlugin extends Plugin {
     private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     @PluginMethod
-    public void createUpload(PluginCall call) {
+    public void upload(PluginCall call) {
         JSObject options = call.getObject("options");
         if (options == null) {
             call.reject("Missing options for the upload.");
@@ -110,6 +110,11 @@ public class CapacitorTusClientPlugin extends Plugin {
                     headers
             );
             executorsMap.put(uploadId, executor);
+
+            // Start the upload
+            if (!executor.isRunning()) {
+                pool.submit(executor);
+            }
 
             JSObject result = new JSObject();
             result.put("uploadId", uploadId);

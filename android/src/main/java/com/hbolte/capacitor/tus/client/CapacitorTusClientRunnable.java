@@ -94,6 +94,9 @@ public class CapacitorTusClientRunnable extends TusExecutor implements Runnable 
             JSObject progressData = new JSObject();
             progressData.put("uploadId", uploadId);
             progressData.put("progress", progress);
+            progressData.put("bytesUploaded", bytesUploaded);
+            progressData.put("totalBytes", totalBytes);
+            progressData.put("context", upload.getMetadata());
 
             plugin.triggerListener("onProgress", progressData);
         } while (uploader.uploadChunk() > -1 && !shouldFinish);
@@ -104,6 +107,13 @@ public class CapacitorTusClientRunnable extends TusExecutor implements Runnable 
     @Override
     public void run() {
         isRunning = true;
+
+        // Notify the listener that the upload has started
+        JSObject startData = new JSObject();
+        startData.put("uploadId", uploadId);
+        startData.put("context", upload.getMetadata());
+        plugin.triggerListener("onStart", startData);
+
         try {
             makeAttempts();
 
@@ -112,12 +122,14 @@ public class CapacitorTusClientRunnable extends TusExecutor implements Runnable 
             JSObject successData = new JSObject();
             successData.put("uploadId", uploadId);
             successData.put("uploadUrl", uploadUrl);
+            successData.put("context", upload.getMetadata());
 
             plugin.triggerListener("onSuccess", successData);
         } catch (ProtocolException | IOException e) {
             JSObject errorData = new JSObject();
             errorData.put("uploadId", uploadId);
             errorData.put("error", e.getMessage());
+            errorData.put("context", upload.getMetadata());
 
             plugin.triggerListener("onError", errorData);
         }

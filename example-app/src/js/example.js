@@ -73,7 +73,7 @@ window.uploadFile = async () => {
     try {
         chooseFileButton.disabled = true;
 
-        const uploadId = await CapacitorTusClient.createUpload({
+        const uploadId = await CapacitorTusClient.upload({
             options: {
                 uri: selectedFile.path,
                 endpoint: endpoint,
@@ -115,12 +115,10 @@ window.uploadFile = async () => {
                 resetUI();
             }
         });
-
-        await CapacitorTusClient.resume({ uploadId: activeUploadId });
     } catch (error) {
+        console.error('Error uploading file:', error);
         alert('Failed to upload the file. Please try again.');
         resetUI();
-        console.error('Error uploading file:', error);
     }
 };
 

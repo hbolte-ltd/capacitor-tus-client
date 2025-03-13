@@ -48,7 +48,7 @@ const fileResult = await FilePicker.pickFiles({
 const file = fileResult.files[0];
 
 // Create an upload
-const uploadResult = await CapacitorTusClient.createUpload({
+const uploadResult = await CapacitorTusClient.upload({
   uri: file.path,
   endpoint: 'https://your-server.com/uploads',
   headers: { Authorization: 'Bearer YOUR_TOKEN' },
@@ -104,22 +104,27 @@ await CapacitorTusClient.abort({ uploadId: 'your-upload-id' });
 
 <docgen-index>
 
-* [`createUpload(...)`](#createupload)
+* [`upload(...)`](#upload)
 * [`pause(...)`](#pause)
 * [`resume(...)`](#resume)
 * [`abort(...)`](#abort)
+* [`addListener(K, ...)`](#addlistenerk-)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
+* [Enums](#enums)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### createUpload(...)
+Represents the Capacitor TUS Client Plugin, which
+provides methods to manage file uploads and integrates various events.
+
+### upload(...)
 
 ```typescript
-createUpload(options: UploadOptions) => Promise<UploadResult>
+upload(options: UploadOptions) => Promise<UploadResult>
 ```
 
 Creates a TUS upload.
@@ -158,9 +163,9 @@ resume(options: { uploadId: string; }) => Promise<{ success: boolean; }>
 
 Resumes an existing upload.
 
-| Param         | Type                               | Description |
-| ------------- | ---------------------------------- | ----------- |
-| **`options`** | <code>{ uploadId: string; }</code> | : string }  |
+| Param         | Type                               | Description                     |
+| ------------- | ---------------------------------- | ------------------------------- |
+| **`options`** | <code>{ uploadId: string; }</code> | The ID of the upload to resume. |
 
 **Returns:** <code>Promise&lt;{ success: boolean; }&gt;</code>
 
@@ -175,9 +180,27 @@ abort(options: { uploadId: string; }) => Promise<void>
 
 Aborts an ongoing upload.
 
-| Param         | Type                               | Description |
-| ------------- | ---------------------------------- | ----------- |
-| **`options`** | <code>{ uploadId: string; }</code> | : string }  |
+| Param         | Type                               | Description                    |
+| ------------- | ---------------------------------- | ------------------------------ |
+| **`options`** | <code>{ uploadId: string; }</code> | The ID of the upload to abort. |
+
+--------------------
+
+
+### addListener(K, ...)
+
+```typescript
+addListener<K extends ListenerType>(eventType: K, listener: (data: ListenerDataMap[K]) => void) => Promise<PluginListenerHandle>
+```
+
+Adds a listener for specific upload events (start, progress, success, or error).
+
+| Param           | Type                                               | Description                                        |
+| --------------- | -------------------------------------------------- | -------------------------------------------------- |
+| **`eventType`** | <code>K</code>                                     | The type of the event to listen to.                |
+| **`listener`**  | <code>(data: ListenerDataMap[K]) =&gt; void</code> | The callback to execute when the event is emitted. |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -210,6 +233,70 @@ govern the upload behavior.
 | **`chunkSize`** | <code>number</code>                                             | The size of each data chunk, in bytes, to be processed and transferred during the upload. This property is optional, but when set, it is typically used for chunked or resumable uploads. |
 
 
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+#### ListenerDataMap
+
+Maps listener types to their respective data payload interfaces.
+
+| Prop                            | Type                                                                      |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| **`[ListenerType.OnStart]`**    | <code><a href="#onstartlistenerdata">OnStartListenerData</a></code>       |
+| **`[ListenerType.OnProgress]`** | <code><a href="#onprogresslistenerdata">OnProgressListenerData</a></code> |
+| **`[ListenerType.OnSuccess]`**  | <code><a href="#onsuccesslistenerdata">OnSuccessListenerData</a></code>   |
+| **`[ListenerType.OnError]`**    | <code><a href="#onerrorlistenerdata">OnErrorListenerData</a></code>       |
+
+
+#### OnStartListenerData
+
+Represents the event payload emitted when an upload starts.
+
+| Prop           | Type                                                            | Description                                           |
+| -------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| **`uploadId`** | <code>string</code>                                             | A unique identifier for the upload session.           |
+| **`context`**  | <code><a href="#record">Record</a>&lt;string, string&gt;</code> | Optional metadata/context associated with the upload. |
+
+
+#### OnProgressListenerData
+
+Represents the event payload emitted during an upload progress update.
+
+| Prop                | Type                                                            | Description                                           |
+| ------------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| **`uploadId`**      | <code>string</code>                                             | A unique identifier for the upload session.           |
+| **`progress`**      | <code>number</code>                                             | The current progress of the upload as a percentage.   |
+| **`bytesUploaded`** | <code>number</code>                                             | The total number of bytes already uploaded.           |
+| **`totalBytes`**    | <code>number</code>                                             | The total size of the file being uploaded, in bytes.  |
+| **`context`**       | <code><a href="#record">Record</a>&lt;string, string&gt;</code> | Optional metadata/context associated with the upload. |
+
+
+#### OnSuccessListenerData
+
+Represents the event payload emitted when an upload succeeds.
+
+| Prop            | Type                                                            | Description                                           |
+| --------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| **`uploadId`**  | <code>string</code>                                             | A unique identifier for the upload session.           |
+| **`uploadUrl`** | <code>string</code>                                             | The URL of the uploaded file or resource.             |
+| **`context`**   | <code><a href="#record">Record</a>&lt;string, string&gt;</code> | Optional metadata/context associated with the upload. |
+
+
+#### OnErrorListenerData
+
+Represents the event payload emitted when an upload fails.
+
+| Prop           | Type                                                            | Description                                           |
+| -------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| **`uploadId`** | <code>string</code>                                             | A unique identifier for the upload session.           |
+| **`error`**    | <code>string</code>                                             | Detailed error message for the failure.               |
+| **`context`**  | <code><a href="#record">Record</a>&lt;string, string&gt;</code> | Optional metadata/context associated with the upload. |
+
+
 ### Type Aliases
 
 
@@ -217,8 +304,19 @@ govern the upload behavior.
 
 Construct a type with a set of properties K of type T
 
-<code>{
- [P in K]: T;
- }</code>
+<code>{ [P in K]: T; }</code>
+
+
+### Enums
+
+
+#### ListenerType
+
+| Members          | Value                     |
+| ---------------- | ------------------------- |
+| **`OnStart`**    | <code>'onStart'</code>    |
+| **`OnProgress`** | <code>'onProgress'</code> |
+| **`OnSuccess`**  | <code>'onSuccess'</code>  |
+| **`OnError`**    | <code>'onError'</code>    |
 
 </docgen-api>
