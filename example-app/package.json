@@ -13,10 +13,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "7.0.0",
     "@capacitor/core": "latest",
-    "@hbolte/capacitor-tus-client": "file:..",
     "@capacitor/ios": "7.0.0",
-    "@capacitor/android": "7.0.0"
+    "@capawesome/capacitor-file-picker": "^7.0.1",
+    "@hbolte/capacitor-tus-client": "file:.."
   },
   "devDependencies": {
     "@capacitor/cli": "latest",

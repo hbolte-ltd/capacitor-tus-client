@@ -9,6 +9,7 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
+    implementation project(':capawesome-capacitor-file-picker')
     implementation project(':hbolte-capacitor-tus-client')
 
 }
