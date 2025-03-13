@@ -1,16 +1,15 @@
-import type {PluginListenerHandle} from '@capacitor/core';
-import { WebPlugin} from '@capacitor/core';
+import type { PluginListenerHandle } from '@capacitor/core';
+import { WebPlugin } from '@capacitor/core';
 
 import type {
-  CapacitorTusClientPlugin, ListenerDataMap,
+  CapacitorTusClientPlugin,
+  ListenerDataMap,
   ListenerType,
-  UploadOptions, UploadResult
+  UploadOptions,
+  UploadResult,
 } from './definitions';
 
-export class CapacitorTusClientWeb
-  extends WebPlugin
-  implements CapacitorTusClientPlugin
-{
+export class CapacitorTusClientWeb extends WebPlugin implements CapacitorTusClientPlugin {
   async upload(options: UploadOptions): Promise<UploadResult> {
     console.error('createUpload is not implemented on web.', options);
     return Promise.reject('createUpload is only supported on native platforms.');
@@ -33,7 +32,7 @@ export class CapacitorTusClientWeb
 
   async addListener<K extends ListenerType>(
     eventType: K,
-    listener: (data: ListenerDataMap[K]) => void
+    listener: (data: ListenerDataMap[K]) => void,
   ): Promise<PluginListenerHandle> {
     console.error(`addListener for event type "${eventType}" is not implemented on web.`, listener);
     return Promise.resolve({

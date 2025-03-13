@@ -2,21 +2,18 @@ package com.hbolte.capacitor.tus.client;
 
 import android.content.SharedPreferences;
 import android.util.Log;
-
 import com.getcapacitor.JSObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
-
 import io.tus.android.client.TusPreferencesURLStore;
 import io.tus.java.client.ProtocolException;
 import io.tus.java.client.TusClient;
 import io.tus.java.client.TusExecutor;
 import io.tus.java.client.TusUpload;
 import io.tus.java.client.TusUploader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
 
 /**
  * CapacitorTusClientRunnable is a class that implements the Runnable interface and extends TusExecutor.
@@ -25,6 +22,7 @@ import io.tus.java.client.TusUploader;
  * It also communicates upload progress and results back to the Capacitor plugin.
  */
 public class CapacitorTusClientRunnable extends TusExecutor implements Runnable {
+
     private final TusUpload upload;
     private TusUploader uploader;
     private final TusClient client;
@@ -35,14 +33,14 @@ public class CapacitorTusClientRunnable extends TusExecutor implements Runnable 
     private final CapacitorTusClientPlugin plugin;
 
     public CapacitorTusClientRunnable(
-            CapacitorTusClientPlugin plugin,
-            SharedPreferences pref,
-            InputStream inputStream,
-            String fileName,
-            String uploadId,
-            String endpoint,
-            Map<String, String> metadata,
-            Map<String, String> headers
+        CapacitorTusClientPlugin plugin,
+        SharedPreferences pref,
+        InputStream inputStream,
+        String fileName,
+        String uploadId,
+        String endpoint,
+        Map<String, String> metadata,
+        Map<String, String> headers
     ) throws MalformedURLException {
         this.plugin = plugin;
         this.uploadId = uploadId;
@@ -89,7 +87,7 @@ public class CapacitorTusClientRunnable extends TusExecutor implements Runnable 
             }
 
             long bytesUploaded = uploader.getOffset();
-            double progress = (double) bytesUploaded / totalBytes * 100;
+            double progress = ((double) bytesUploaded / totalBytes) * 100;
 
             JSObject progressData = new JSObject();
             progressData.put("uploadId", uploadId);

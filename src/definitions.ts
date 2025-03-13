@@ -1,4 +1,4 @@
-import type {PluginListenerHandle} from "@capacitor/core";
+import type { PluginListenerHandle } from '@capacitor/core';
 
 /**
  * Represents the configuration options for an upload operation.
@@ -207,7 +207,7 @@ export enum ListenerType {
   OnStart = 'onStart',
   OnProgress = 'onProgress',
   OnSuccess = 'onSuccess',
-  OnError = 'onError'
+  OnError = 'onError',
 }
 
 /**
@@ -266,6 +266,6 @@ export interface CapacitorTusClientPlugin {
    */
   addListener<K extends ListenerType>(
     eventType: K,
-    listener: (data: ListenerDataMap[K]) => void
+    listener: (data: ListenerDataMap[K]) => void,
   ): Promise<PluginListenerHandle>;
 }

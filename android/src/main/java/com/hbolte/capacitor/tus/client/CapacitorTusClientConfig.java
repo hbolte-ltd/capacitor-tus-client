@@ -5,6 +5,7 @@ package com.hbolte.capacitor.tus.client;
  * It allows you to customize settings such as the chunk size for file uploads.
  */
 public class CapacitorTusClientConfig {
+
     private static CapacitorTusClientConfig instance;
 
     private int chunkSize = 6 * 1024 * 1024;

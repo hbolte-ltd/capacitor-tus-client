@@ -4,13 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
+import io.tus.java.client.ProtocolException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -19,8 +18,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import io.tus.java.client.ProtocolException;
 
 /**
  * CapacitorTusClientPlugin is a Capacitor plugin that facilitates uploading files using the Tus protocol.
@@ -32,6 +29,7 @@ import io.tus.java.client.ProtocolException;
  */
 @CapacitorPlugin(name = "CapacitorTusClient")
 public class CapacitorTusClientPlugin extends Plugin {
+
     private final Map<String, CapacitorTusClientRunnable> executorsMap = new HashMap<>();
     private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -100,14 +98,14 @@ public class CapacitorTusClientPlugin extends Plugin {
 
             String uploadId = UUID.randomUUID().toString();
             CapacitorTusClientRunnable executor = new CapacitorTusClientRunnable(
-                    this,
-                    getContext().getSharedPreferences("tus", 0),
-                    inputStream,
-                    getFileName(getContext(), uri),
-                    uploadId,
-                    endpoint,
-                    metadata,
-                    headers
+                this,
+                getContext().getSharedPreferences("tus", 0),
+                inputStream,
+                getFileName(getContext(), uri),
+                uploadId,
+                endpoint,
+                metadata,
+                headers
             );
             executorsMap.put(uploadId, executor);
 
@@ -119,7 +117,6 @@ public class CapacitorTusClientPlugin extends Plugin {
             JSObject result = new JSObject();
             result.put("uploadId", uploadId);
             call.resolve(result);
-
         } catch (IOException e) {
             call.reject("Error creating upload: " + e.getMessage());
         }
