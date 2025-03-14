@@ -1,0 +1,60 @@
+name: Create release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Build
+      - name: Run build
+        run: npm run build
+
+      # Run semantic release
+      - name: Run semantic release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npx semantic-release@22
+
+      # Rebase develop onto master
+      - name: Rebase develop onto master
+        run: |
+          git fetch --all
+          git checkout master
+          git pull
+          git checkout develop
+          git pull
+          git rebase develop --onto master
+
+      # Create pull request on GitHub
+      - name: Create a pull request for the rebase
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          branch: task/rebaseAfterRelease
+          base: develop
+          title: "[Develop] - Rebase of the current release"
+          draft: false
+
+      # Check outputs
+      - name: Check outputs
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
